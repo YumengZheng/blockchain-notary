@@ -20,7 +20,7 @@ class BlockAPI {
   }
 
   initControllers() {
-    require("./test.js")(this.app);
+    require("./blockChain.js")(this.app);
   }
 
   start() {
