@@ -291,7 +291,7 @@ class Blockchain {
         let validationWindow = this.getValidationWindow(requestTimeStamp);
         //make response data
         let result = {
-          registerStar: isValid,
+          registerStar: !!this.mempool[walletAddress],
           status: {
             address: walletAddress,
             requestTimeStamp,
