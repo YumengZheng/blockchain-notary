@@ -31,7 +31,7 @@ curl -X POST \
 
 ```
 curl -X POST \
-   http://localhost:8000/api/block \
+   http://localhost:8000/block \
   -H 'Content-Type: application/json' \
   -H 'cache-control: no-cache' \
   -d '{
@@ -45,21 +45,21 @@ curl -X POST \
 
 ```
 curl -X GET \
-   localhost:8000/stars/hash/:hash \
+   localhost:8000/stars/hash:[hash] \
   -H 'Content-Type: application/json' \
   -H 'cache-control: no-cache' \
 ```
 
 ```
 curl -X GET \
-   localhost:8000/stars/address/:address \
+   localhost:8000/stars/address:[address] \
   -H 'Content-Type: application/json' \
   -H 'cache-control: no-cache' \
 ```
 
 ```
 curl -X GET \
-   localhost:8000/stars/height/:height \
+   localhost:8000/block/:height \
   -H 'Content-Type: application/json' \
   -H 'cache-control: no-cache' \
 ```

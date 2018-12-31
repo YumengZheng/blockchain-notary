@@ -47,7 +47,7 @@ class Blockchain {
   }
 
   postNewBlock() {
-    this.app.post("/api/block", async (req, res) => {
+    this.app.post("/block", async (req, res) => {
       let { body } = req;
       let isValid = this.verifyAddressRequest(body.address);
 
@@ -86,7 +86,7 @@ class Blockchain {
   }
 
   getBlockByHash() {
-    this.app.get("/stars/hash/:hash", async (req, res) => {
+    this.app.get("/stars/hash:hash", async (req, res) => {
       let { hash } = req.params;
       let block = {};
       await db
@@ -106,8 +106,8 @@ class Blockchain {
   }
 
   getBlockByWalletAddress() {
-    this.app.get("/stars/address/:address", async (req, res) => {
-      let { address } = req.params.address;
+    this.app.get("/stars/address:address", async (req, res) => {
+      let { address } = req.params;
       let arr = [];
       await db
         .createReadStream()
@@ -130,7 +130,7 @@ class Blockchain {
   }
 
   getBlockByHeight() {
-    this.app.get("/stars/height/:height", async (req, res) => {
+    this.app.get("/block/:height", async (req, res) => {
       let { height } = req.params;
       let block = await this.getBlock(height);
       res.send(block);
