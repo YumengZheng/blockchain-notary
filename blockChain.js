@@ -50,9 +50,10 @@ class Blockchain {
     this.app.post("/block", async (req, res) => {
       let { body } = req;
       let isValid = this.verifyAddressRequest(body.address);
-
       if (body !== undefined && isValid) {
-        body.star.storyDecoded = hex2ascii(body.star.story);
+        let starStory = Buffer(body.star.story).toString("hex");
+        body.star.story = starStory;
+        body.star.storyDecoded = hex2ascii(starStory);
         let newBlock = new Block(body);
         let height = await this.getBlockHeight();
         let lastBlock = await this.getBlock(height - 1);
@@ -64,9 +65,10 @@ class Blockchain {
         newBlock.hash = SHA256(JSON.stringify(newBlock)).toString();
         newBlock.height = height;
         await this.addLevelDBData(height, newBlock);
+        delete this.mempoolValid[body.address];
         res.send(newBlock);
       } else {
-        res.send("please provide content");
+        res.send("empty content or validation was used for another star");
       }
     });
   }
@@ -237,6 +239,7 @@ class Blockchain {
     let validationWindow = TimeoutRequestsWindowTime / 1000 - timeElapse;
     return validationWindow;
   }
+
   addRequestValidation() {
     this.app.post("/requestValidation", (req, res) => {
       let walletAddress = req.body.address;
@@ -244,6 +247,10 @@ class Blockchain {
         // If the user re-submits a request, the application will not add a new request; instead,
         // it will return the same request that it is already in the mempool.
         if (this.mempool[walletAddress]) {
+          let resData = this.mempool[walletAddress];
+          let { requestTimeStamp } = resData;
+          resData.validationWindow = this.getValidationWindow(requestTimeStamp);
+          this.mempool[walletAddress] = resData;
           res.send(this.mempool[walletAddress]);
         } else {
           //get request time
@@ -280,6 +287,9 @@ class Blockchain {
   validateRequestByWallet() {
     this.app.post("/message-signature/validate", (req, res) => {
       let { signature, address: walletAddress } = req.body;
+      if (!signature || !walletAddress) {
+        res.send("invalide address or signature");
+      }
       let { requestTimeStamp, validationWindow, message } = this.mempool[
         walletAddress
       ];
